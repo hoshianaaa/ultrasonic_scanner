@@ -2,13 +2,13 @@
 
 import rospy
 import serial
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import PointStamped
 
 class UltrasonicCostmap():
     def __init__(self):
         print('start node')
         rospy.init_node('ultrasonic_costmap')
-        self.u_data_pub = rospy.Publisher('u_data', Point, queue_size=1)
+        self.u_data_pub = rospy.Publisher('u_data', PointStamped, queue_size=1)
         self.rate = 20
 
         self.ser = serial.Serial('/dev/ttyACM1', 9600, timeout=1)
@@ -24,8 +24,9 @@ class UltrasonicCostmap():
 
         print(data)
 
-        p = Point()
-        p.x = int(data)
+        p = PointStamped()
+        p.point.y = int(data)/100.0
+        p.header.frame_id = "hokuyo"
         self.u_data_pub.publish(p)
 
 
